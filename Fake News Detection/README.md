@@ -30,3 +30,26 @@ GRU: [[6762 244],[75 7346]]
 BiGRU: [[6892 114],[157 7264]]  
 CNN+LSTM: [[6866 140],[201 7220]]  
 LSTM: [[6670 336],[83 7338]]  
+
+## Upgraded BiGRU + Attention Pipeline
+
+The upgraded workflow is in `bigru.ipynb` and includes:
+
+- Regex preprocessing that removes publisher datelines, URLs, HTML, and social handles before tokenization.
+- Train-only vocabulary fitting, with separate validation and untouched test splits.
+- GloVe initialization, `SpatialDropout1D`, a sequence-returning BiGRU, and a mask-aware custom attention layer.
+- `EarlyStopping` and `ReduceLROnPlateau` callbacks.
+- Classification report, confusion matrix, and the false-positive rate for real articles incorrectly flagged as fake.
+
+Download `glove.6B.100d.txt` and place it beside the notebook, or update `GLOVE_PATH` in the GloVe cell. Running the export cell creates `bigru_attention.keras` and `vocabulary.txt`.
+
+## Streamlit Dashboard
+
+Install the runtime dependencies and launch the dashboard from this directory:
+
+```bash
+pip install tensorflow streamlit pandas scikit-learn seaborn datasets
+streamlit run streamlit_app.py
+```
+
+The dashboard loads `bigru_attention.keras` and `vocabulary.txt`, classifies individual articles, explains precision/recall/false-positive rate, and accepts an evaluation CSV with `title`, `text`, and `label` columns (`0 = real`, `1 = fake`).
